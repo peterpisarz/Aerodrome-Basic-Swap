@@ -34,7 +34,7 @@ Copy and paste the contract address into the swap.js variable called
 Set `isLive` to `false`
 
 !IMPORTANT!
-set signerAddress to the first address in your hardhat node account. At the time of writing, it is:
+set signer.address to the first address in your hardhat node account. At the time of writing, it is:
 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266
 
 Call the swap with
@@ -51,8 +51,8 @@ Copy and paste the contract address into the swap.js variable called
 Set `isLive` to `true`
 
 !IMPORTANT!
-set signerAddress to your wallet address. match this with the Private Key in the .env file.
-If these do not match you will send the tokens to wherever the signerAddress says, regardless of wether you pay with your private key or not
+set signer.address to your wallet address. match this with the Private Key in the .env file.
+If these do not match you will send the tokens to wherever the signer.address says, regardless of wether you pay with your private key or not
 
 Call the swap with
 `npx hardhat run scripts/swap.js --network base`

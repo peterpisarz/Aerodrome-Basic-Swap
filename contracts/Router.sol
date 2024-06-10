@@ -3,7 +3,7 @@
 */
 
 // SPDX-License-Identifier: BUSL-1.1
-pragma solidity 0.8.19;
+pragma solidity ^0.8.19;
 
 // OpenZeppelin Contracts (last updated v4.8.0) (utils/math/Math.sol)
 
