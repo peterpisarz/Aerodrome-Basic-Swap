@@ -8,11 +8,9 @@ async function main() {
 
   // Deploy the contract
   console.log("Deploying BasicSwap...");
-  const myContract = await BasicSwap.deploy(routerAddress);
+  const myContract = await BasicSwap.deploy(routerAddress, { gasLimit: 12000000});
   const tx = await myContract.waitForDeployment();
   console.log(`BasicSwap deployed to: ${await myContract.getAddress()} on ${hre.network.name}\n`);
-
-  console.log(tx)
 
   // // Verify on Etherscan
   // const WAIT_BLOCK_CONFIRMATIONS = 6;
