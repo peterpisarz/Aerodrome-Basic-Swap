@@ -8,6 +8,11 @@ The contract calls the swapExactETHForTokens function on the Aerdrome Router.sol
 
 The hope is to work this logic into more complex contracts for DeFi purposes.
 
+A simplified version of this contract was deployed to the Base network at:
+
+0x08d636ABAFec0f0b08Fe4d8dCFf43F933Cc03975
+https://basescan.org/address/0x08d636ABAFec0f0b08Fe4d8dCFf43F933Cc03975
+
 ## Setting up the Project
 
 You can clone this project into a local directory.
@@ -33,10 +38,6 @@ Copy and paste the contract address into the swap.js variable called
 
 Set `isLive` to `false`
 
-!IMPORTANT!
-set signer.address to the first address in your hardhat node account. At the time of writing, it is:
-0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266
-
 Call the swap with
 `npx hardhat run scripts/swap.js --network localhost` 
 
@@ -49,10 +50,6 @@ Copy and paste the contract address into the swap.js variable called
 `basicSwapAddress`
 
 Set `isLive` to `true`
-
-!IMPORTANT!
-set signer.address to your wallet address. match this with the Private Key in the .env file.
-If these do not match you will send the tokens to wherever the signer.address says, regardless of wether you pay with your private key or not
 
 Call the swap with
 `npx hardhat run scripts/swap.js --network base`
