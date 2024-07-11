@@ -55,7 +55,6 @@ contract BasicSwap {
     function getRoutes(
         address[] memory _path
     ) external view returns (IRouter.Route[] memory){
-        // TransferHelper.safeApprove(_path[0], address(aRouter), _amountIn);
 
         IRouter.Route[] memory routes = new IRouter.Route[](1);
         routes[0] = IRouter.Route({
@@ -73,6 +72,7 @@ contract BasicSwap {
         uint256 _amountIn,
         uint256 _amountOut
     ) external {
+        TransferHelper.safeTransferFrom(_path[0], msg.sender, address(this), _amountIn);
         TransferHelper.safeApprove(_path[0], address(router), _amountIn);
 
         IRouter.Route[] memory routes = new IRouter.Route[](1);
@@ -82,6 +82,7 @@ contract BasicSwap {
             stable: false,
             factory: factoryAerodrome
         });
+
 
         // Call the swapExactTokensForTokens function on the external router contract
         router.swapExactTokensForTokens(
@@ -102,7 +103,7 @@ contract BasicSwap {
             from: _path[0],
             to: _path[1],
             stable: false,
-            factory: factoryAerodrome
+            factory: 0x420DD381b31aEf6683db6B902084cB0FFECe40Da
         });
 
         return routes;
@@ -114,6 +115,7 @@ contract BasicSwap {
         uint256 _amountOut        
     ) external {
         require(_path.length == 2, "Path must have two elements");
+        TransferHelper.safeTransferFrom(_path[0], msg.sender, address(this), _amountIn);
         TransferHelper.safeApprove(_path[0], address(router), _amountIn);
 
         IRouter.Route[] memory _routes = _getRoutes(_path);
@@ -127,5 +129,25 @@ contract BasicSwap {
             block.timestamp + 1200
         );
     }
+
+    function executeDirect(
+        uint256 _amountIn,
+        uint256 _amountOutMin,
+        IRouter.Route[] calldata _routes,
+        address _to)
+    external returns (uint256[] memory amounts) {
+        TransferHelper.safeTransferFrom(_routes[0].from, msg.sender, address(this), _amountIn);
+        TransferHelper.safeApprove(_routes[0].from, address(router), _amountIn);
+
+        // Call the swapExactTokensForTokens function on the external router contract
+        router.swapExactTokensForTokens(
+            _amountIn,
+            _amountOutMin, 
+            _routes, 
+            _to, 
+            block.timestamp + 3600
+        );
+    }
+    
 }
  
