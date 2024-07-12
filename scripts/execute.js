@@ -95,22 +95,25 @@ const main = async () => {
 	console.log("Delay 2000...\n")
 	await delay(2000)
 
-	const routes2 = [{
-    from: aeroAddress,
-    to: tokenAddress, // DAI in this example
-    stable: false,
-    factory: '0x420DD381b31aEf6683db6B902084cB0FFECe40Da' // Aerodrome Factory Address
-  }];
-
-	const tx4 = await basicSwap.connect(signer).executeDirect(
-  	amountInAERO,
+	const tx4 = await basicSwap.connect(signer).executeRoutes(
+		path,
+  	amountIn,
   	amountOutMin,
-  	routes2,
-  	signer.address
 	)
 
 	balance = await daiContract.balanceOf(signer.address)
-	console.log(`Balance of DAI After: ${ethers.formatUnits(balance, 18)}\n`)
+	console.log(`Balance of DAI After First Swap: ${ethers.formatUnits(balance, 18)}\n`)
+
+	const tx5 = await basicSwap.connect(signer).swapTokensForTokens(
+		amountIn,
+		amountOutMin,
+		tx,
+		signer.address
+	);
+
+	balance = await daiContract.balanceOf(signer.address)
+	console.log(`Balance of DAI After Second Swap: ${ethers.formatUnits(balance, 18)}\n`)
+
 	console.log("\n*** Swap Complete! ***")
 }
 
