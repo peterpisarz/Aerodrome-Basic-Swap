@@ -1,9 +1,12 @@
 // SPDX-License-Identifier: GPL-3.0
 
+// BasicSwap V2
+
 /*
 * Variety of functions which interact with Aerodrome's Router contract.
-* Many of these functions produce the same end result (a token swap) but with a different philosophy
+* Many of these functions produce the same end result (a token swap) but with a different swapping philosophy
 * Most of these are tests of features and variations in logic before incorporating into more sophisticated bots
+* Welcome job recruiters!! This contract is mainly a demo of my skills, please reach out for further questions.
 */
 
 pragma solidity ^0.8.19;
@@ -15,9 +18,11 @@ import { TransferHelper } from '@uniswap/v3-periphery/contracts/libraries/Transf
 contract BasicSwap {
     IRouter public router;
     address public factoryAerodrome = 0x420DD381b31aEf6683db6B902084cB0FFECe40Da;
+    address public owner;
 
     constructor(address _routerAddress) {
         router = IRouter(_routerAddress);
+        owner = msg.sender;
     }
 
     /*
@@ -70,6 +75,7 @@ contract BasicSwap {
         uint256 _amountIn,
         uint256 _amountOutMin, 
         IRouter.Route[] calldata _routes, 
+
         address _to) 
     external returns (uint256[] memory amounts) {
 
@@ -206,11 +212,26 @@ contract BasicSwap {
         // Call the swapExactTokensForTokens function on the external router contract
         router.swapExactTokensForTokens(
             _amountIn,
-            _amountOut, 
+            _amountOut,
             _routes,
             address(this), 
             block.timestamp + 1200
         );
+    }
+
+    /*
+    * 5b.)
+    * @notice Simple withdrawl pattern for tokens which may be sent to the contract
+    * @dev Owner calls the withdraw function on an external router contract.
+    * 
+    * @param _token is the address of the token you want to extract from the contract
+    * 
+    * Not the best logical method for reciving tokens during a swap, but writing the contract
+    * in this manner to demonstrate functionality and how an action like this may be done.
+    */
+    function withdraw(address _token) external {
+        require(msg.sender == owner, "Owner must call this function. Funds returned to owner only");
+        IERC20(_token).transfer(owner, IERC20(_token).balanceOf(address(this)));
     }
 }
  

@@ -7,7 +7,7 @@ const isLive = false
 let provider
 
 // CONFIGURATION VARIABLES
-const basicSwapAddress = "0x38a024C0b412B9d1db8BC398140D00F5Af3093D4" // Contract address of BasicSwap
+const basicSwapAddress = "0xde2Bd2ffEA002b8E84ADeA96e5976aF664115E2c" // Contract address of BasicSwap
 const aeroAddress = '0x940181a94A35A4569E4529A3CDfB74e38FD98631' // Address of token you want to receive
 const tokenAddress = '0x50c5725949A6F0c72E6C4a641F24049A917DB0Cb' // DAI address in this case
 const amountIn = hre.ethers.parseUnits("0.001", 18)  // Amount of ETH to swap
@@ -78,6 +78,8 @@ const main = async () => {
 		{ value: amountIn }
 	);
 
+	// Delay is not the typical async pattern but is sometimes necessary on localhost. 
+	// await tx2.wait() is the proper method for mainnet. Delay just helps the demo.
 	console.log("Delay 2000...\n")
 	await delay(2000)
 
@@ -95,26 +97,29 @@ const main = async () => {
 	console.log("Delay 2000...\n")
 	await delay(2000)
 
+	// Calling executeRoutes function which returns the exchanged amount to the contract
 	const tx4 = await basicSwap.connect(signer).executeRoutes(
 		path,
-  	amountIn,
+  	amountInAERO,
   	amountOutMin,
 	)
 
+	// Getting contract balance vs the signer balance of DAI
+	balance = await daiContract.balanceOf(basicSwapAddress)
+	console.log(`Balance of DAI on Contract After Swap: ${ethers.formatUnits(balance, 18)}\n`)
 	balance = await daiContract.balanceOf(signer.address)
-	console.log(`Balance of DAI After First Swap: ${ethers.formatUnits(balance, 18)}\n`)
+	console.log(`Balance of DAI for Signer After Swap: ${ethers.formatUnits(balance, 18)}\n`)
 
-	const tx5 = await basicSwap.connect(signer).swapTokensForTokens(
-		amountIn,
-		amountOutMin,
-		tx,
-		signer.address
-	);
+	// Simple function to return the DAI to the signer (contract owner address)
+	const tx5 = await	basicSwap.connect(signer).withdraw(tokenAddress)
 
+	// Getting balances again for contract and signer to make sure it worked properly
+	balance = await daiContract.balanceOf(basicSwapAddress)
+	console.log(`Balance of DAI on Contract After Swap: ${ethers.formatUnits(balance, 18)}\n`)
 	balance = await daiContract.balanceOf(signer.address)
-	console.log(`Balance of DAI After Second Swap: ${ethers.formatUnits(balance, 18)}\n`)
+	console.log(`Balance of DAI for Signer After Swap: ${ethers.formatUnits(balance, 18)}\n`)
 
-	console.log("\n*** Swap Complete! ***")
+	console.log("*** Swap Complete! ***\n")
 }
 
 main().catch((error) => {

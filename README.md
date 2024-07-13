@@ -1,5 +1,14 @@
 # Basic Swap on Aerodrome
 
+## Update 7/12/2024
+
+Welcome BasicSwap V2!!
+Newest contract has been deployed to:
+0xf75d8487611972fC1f84F2Fb3675017EaB6155AE
+https://basescan.org/address/0xf75d8487611972fC1f84F2Fb3675017EaB6155AE
+
+---
+
 This is a project that I created to test some basic functionality and interactions with the Aerodrome DEX on Base L2 Network
 
 I created this contract entirely on my own as an entry point to interacting with Aerodrome. At the time of writing this, there is no dev documentation on Aerodrome, so this was a product of my own digging through Github, finding the correct functions and contracts to use.
@@ -36,10 +45,13 @@ Deploy the contract with
 Copy and paste the contract address into the swap.js variable called
 `basicSwapAddress`
 
-Set `isLive` to `false`
+Set `isLive` to `false` if testing locally
 
 Call the swap with
-`npx hardhat run scripts/swap.js --network localhost` 
+`npx hardhat run scripts/swap.js --network localhost`
+
+Call execute.js to test advanced functions of this contract
+`npx hardhat run scripts/execute.js --network localhost` 
 
 ## Running on Base Mainnet
 

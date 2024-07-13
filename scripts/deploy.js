@@ -12,16 +12,16 @@ async function main() {
   const tx = await myContract.waitForDeployment();
   console.log(`BasicSwap deployed to: ${await myContract.getAddress()} on ${hre.network.name}\n`);
 
-  // // Verify on Etherscan
-  // const WAIT_BLOCK_CONFIRMATIONS = 6;
-  // await myContract.deployTransaction.wait(WAIT_BLOCK_CONFIRMATIONS);
+  // Verify on Etherscan
+  const WAIT_BLOCK_CONFIRMATIONS = 6;
+  await myContract.deployTransaction.wait(WAIT_BLOCK_CONFIRMATIONS);
 
-  // console.log(`Verifying contract on Etherscan...`);
+  console.log(`Verifying contract on Etherscan...`);
 
-  // await run(`verify:verify`, {
-  //   address: myContract.address,
-  //   constructorArguments: [routerAddress],
-  // });
+  await run(`verify:verify`, {
+    address: myContract.address,
+    constructorArguments: [routerAddress],
+  });
 
 }
 
