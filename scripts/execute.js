@@ -3,11 +3,11 @@ require("dotenv").config()
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 const IERC20 = require('@openzeppelin/contracts/build/contracts/ERC20.json')
-const isLive = false
+const isLive = true
 let provider
 
 // CONFIGURATION VARIABLES
-const basicSwapAddress = "0xde2Bd2ffEA002b8E84ADeA96e5976aF664115E2c" // Contract address of BasicSwap
+const basicSwapAddress = "0xf75d8487611972fC1f84F2Fb3675017EaB6155AE" // Contract address of BasicSwap
 const aeroAddress = '0x940181a94A35A4569E4529A3CDfB74e38FD98631' // Address of token you want to receive
 const tokenAddress = '0x50c5725949A6F0c72E6C4a641F24049A917DB0Cb' // DAI address in this case
 const amountIn = hre.ethers.parseUnits("0.001", 18)  // Amount of ETH to swap
