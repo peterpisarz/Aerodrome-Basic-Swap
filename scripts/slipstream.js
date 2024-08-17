@@ -7,9 +7,9 @@ const isLive = false
 let provider
 
 // CONFIGURATION VARIABLES
-const basicSwapAddress = "0xdFdE6B33f13de2CA1A75A6F7169f50541B14f75b" // Contract address of BasicSwap
+const basicSwapAddress = "0xdFdE6B33f13de2CA1A75A6F7169f50541B14f75b" // Contract address of BasicSwapx
 const aeroAddress = '0x940181a94A35A4569E4529A3CDfB74e38FD98631' // Address of token you want to receive
-const tokenAddress = '0x50c5725949A6F0c72E6C4a641F24049A917DB0Cb' // DAI address in this case
+const tokenAddress = '0x4200000000000000000000000000000000000006' // DAI address in this case
 const amountIn = hre.ethers.parseUnits("0.001", 18)  // Amount of ETH to swap
 
 const main = async () => {
@@ -31,7 +31,8 @@ const main = async () => {
 
 	// Get AERO and DAI Contracts
 	const aeroContract = new hre.ethers.Contract(aeroAddress, IERC20.abi, provider)
-	const daiContract = new hre.ethers.Contract(tokenAddress, IERC20.abi, provider)
+	const tokenContract = new hre.ethers.Contract(tokenAddress, IERC20.abi, provider)
+	const tokenSymbol = await tokenContract.symbol()
 
 	// Get AERO Balance Before
 	let balance = await aeroContract.balanceOf(signer.address)
@@ -71,12 +72,11 @@ const main = async () => {
 	console.log(`\n2nd Nonce: ${currentNonce}\n`)
 
 	// Get AERO Balance After
-	balance = await aeroContract.balanceOf(signer.address)
-	console.log(`Balance of AERO After: ${ethers.formatUnits(balance, 18)}`)
+	const amountInAERO = await aeroContract.balanceOf(signer.address)
+	console.log(`Balance of AERO After: ${ethers.formatUnits(amountInAERO, 18)}`)
 
 	// BEGIN LOGIC TO SWAP AERO FOR DAI
-	console.log("\nSwapping AERO for DAI...")
-	const amountInAERO = balance
+	console.log(`\nSwapping AERO for ${tokenSymbol}...`)
 
 	// Approve AERO to send it to the swap contract
 	const tx2 = await aeroContract.connect(signer).approve(basicSwapAddress, amountInAERO)
@@ -87,34 +87,28 @@ const main = async () => {
 	console.log(`\n3rd Nonce: ${currentNonce}\n`)
 
   // Define routes for AERO to DAI swap
-  const routes2 = [{
-    from: aeroAddress,
-    to: tokenAddress, // DAI in this example
-    stable: false,
-    factory: '0x420DD381b31aEf6683db6B902084cB0FFECe40Da' // Aerodrome Factory Address
-  }];
-
-  data = {
-	    amountOutMin: { value: amountOutMin, type: typeof amountOutMin },
-	    routes2: { value: routes2.join(", "), type: typeof routes },
-	    to: { value: signer.address, type: typeof signer.address },
-  		amountInAERO: { value: amountInAERO, type: typeof amountInAERO }
-	};
-	console.table(data)
+  const path = [aeroAddress, tokenAddress]
+  console.log(path)
+  console.log(amountInAERO)
+  console.log(amountOutMin)
 
   try {
-	  const tx3 = await basicSwap.connect(signer).swapTokensForTokens(
+	  const tx3 = await basicSwap.connect(signer).slipstreamSwap(
+	  	path,
 	  	amountInAERO,
-	  	amountOutMin,
-	  	routes2,
-	  	signer.address
+	  	amountOutMin
 	  );
 	} catch (error) {
 	 	console.log(`Error during swap: ${error}\n`)
 	}
 
-	balance = await daiContract.balanceOf(signer.address)
-	console.log(`\nBalance of DAI After: ${ethers.formatUnits(balance, 18)}`)
+	balance = await tokenContract.balanceOf(signer.address)
+	console.log(`\nBalance of ${tokenSymbol} After Swap (pre Withdraw): ${ethers.formatUnits(balance, 18)}\n`)
+
+	const withdrawal = await basicSwap.connect(signer).withdraw(tokenAddress);
+	balance = await tokenContract.balanceOf(signer.address)
+	console.log(`\nBalance of ${tokenSymbol} After (post Withdraw): ${ethers.formatUnits(balance, 18)}`)
+
 	console.log("\n*** Swap Complete! ***")
 }
 

@@ -14,14 +14,17 @@ pragma solidity ^0.8.19;
 import 'hardhat/console.sol';
 import "./Router.sol";
 import { TransferHelper } from '@uniswap/v3-periphery/contracts/libraries/TransferHelper.sol';
+import { ISwapRouter } from './contracts/periphery/interfaces/ISwapRouter.sol';
 
 contract BasicSwap {
     IRouter public router;
+    ISwapRouter public slipStream;
     address public factoryAerodrome = 0x420DD381b31aEf6683db6B902084cB0FFECe40Da;
     address public owner;
 
-    constructor(address _routerAddress) {
+    constructor(address _routerAddress, address _slipStreamAddress) {
         router = IRouter(_routerAddress);
+        slipStream = ISwapRouter(_slipStreamAddress);
         owner = msg.sender;
     }
 
@@ -232,6 +235,32 @@ contract BasicSwap {
     function withdraw(address _token) external {
         require(msg.sender == owner, "Owner must call this function. Funds returned to owner only");
         IERC20(_token).transfer(owner, IERC20(_token).balanceOf(address(this)));
+    }
+
+    function slipstreamSwap(
+        address[] memory _path,
+        uint256 _amountIn,
+        uint256 _amountOut
+    ) external payable returns (uint256 amountOut) {
+
+        TransferHelper.safeTransferFrom(_path[0], msg.sender, address(this), _amountIn);
+        TransferHelper.safeApprove(_path[0], address(slipStream), _amountIn);
+
+        ISwapRouter.ExactInputSingleParams memory params = ISwapRouter.ExactInputSingleParams({
+            tokenIn: _path[0],
+            tokenOut: _path[1],
+            tickSpacing: 200,
+            recipient: address(this),
+            deadline: block.timestamp + 1200,
+            amountIn: _amountIn,
+            amountOutMinimum: _amountOut,
+            sqrtPriceLimitX96: 0
+        });
+
+        console.log("Calling exactInputSingle with params");
+        amountOut = slipStream.exactInputSingle(params);
+        console.log("Swap result amountOut:", amountOut);
+        return amountOut;
     }
 }
  

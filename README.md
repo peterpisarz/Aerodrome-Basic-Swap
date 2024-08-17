@@ -1,5 +1,9 @@
 # Basic Swap on Aerodrome
 
+## Update 7/21/2024
+Successfully verified contract BasicSwap on the block explorer.
+https://basescan.org/address/0xf75d8487611972fC1f84F2Fb3675017EaB6155AE#code
+
 ## Update 7/12/2024
 
 Welcome BasicSwap V2!!
